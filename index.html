@@ -110,28 +110,37 @@
         </form>
     </div>
 
-    <script>
+    script>
+    // 1. Array containing Password and URL
     const _0x5f22 = ["Epiroc@123", "https://script.google.com/macros/s/AKfycby_bKhX8cJKVhk4NxAFqoG-xaNDtZ8_jkoyVhTCAP2jIU4T3ycRAxJfkATDen13sa0TUg/exec"];
-const passKey = _0x5f22[0];
-const scriptURL = _0x5f22[1];
-    // --- ADD THE SECURITY LINES HERE ---
+    const passKey = _0x5f22[0];
+    const scriptURL = _0x5f22[1];
+
+    // 2. Security: Disable Right-Click and View Source
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.onkeydown = function(e) {
         if(e.keyCode == 123) return false; 
-        if(e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) return false;
-        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+        if(e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 67 || e.keyCode == 74)) return false;
+        if(e.ctrlKey && e.keyCode == 85) return false;
     };
-    // ------------------------------------
 
+    // 3. Unlock Function
     function validateLock() {
-        // ... rest of your code ...
+        try {
+            const input = document.getElementById('passInput').value;
+            const form = document.getElementById('residencyForm');
+            const zone = document.getElementById('lockZone');
 
-    function validateLock() {
-        const input = document.getElementById('passInput').value;
-        if (input === passKey) {
-            document.getElementById('residencyForm').classList.remove('hidden');
-            document.getElementById('lockZone').style.display = 'none';
-        } else { alert("Incorrect Password"); }
+            if (input === passKey) {
+                form.classList.remove('hidden');
+                zone.style.display = 'none';
+            } else {
+                alert("Incorrect Password");
+            }
+        } catch (err) {
+            console.error("Unlock Error:", err);
+            alert("System Error. Please refresh.");
+        }
     }
 
     // PARAMETER COUNTER LOGIC
@@ -336,6 +345,7 @@ const scriptURL = _0x5f22[1];
 </script>
 </body>
 </html>
+
 
 
 
