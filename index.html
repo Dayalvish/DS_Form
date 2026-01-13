@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPIROC DS-FLEET PARAMETER ENTRY FORM</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f2f5; padding: 20px; margin: 0; }
+        .header-section { max-width: 700px; margin: 0 auto 10px auto; text-align: center; }
+        .brand-logo { max-width: 160px; height: auto; margin-bottom: 10px; }
+        h2 { margin: 0; font-size: 22px; color: #333; border-bottom: 2px solid #FFD700; padding-bottom: 10px; }
+        .sheet-container { background: white; border: 1px solid #ccc; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 700px; margin: 0 auto; border-radius: 8px; overflow: hidden; }
+        table { border-collapse: collapse; width: 100%; }
+        td { border: 1px solid #dfe3e8; padding: 12px; font-size: 14px; }
+        
+        .hidden { display: none !important; }
+        .status-tag { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; margin-left: 10px; }
+        .locked { background: #f8d7da; color: #721c24; }
+        .unlocked { background: #d4edda; color: #155724; }
+
+        tr:nth-child(odd) .label-cell { background-color: #FFD700 !important; color: #000; font-weight: bold; width: 45%; }
+        tr:nth-child(even) .label-cell { background-color: #555555 !important; color: #ffffff; font-weight: bold; width: 45%; }
+        input, select { width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; }
+        
+        .unlock-area { background: #fff3cd; padding: 15px; text-align: center; border-bottom: 2px solid #ffeeba; }
+        button { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-unlock { background-color: #555; color: white; margin-left: 10px; }
+        .btn-submit { background-color: #28a745; color: white; width: 100%; padding: 15px; font-size: 18px; }
+        .sync-status { font-size: 11px; color: #28a745; font-weight: bold; display: none; padding: 5px; }
+        .required-star { color: #dc3545; }
+    </style>
+</head>
+<body>
+
+    <div class="header-section">
+        <img src="Picture1.png" alt="Epiroc Logo" class="brand-logo" onerror="this.style.display='none'">
+        <h2>EPIROC DS-FLEET PARAMETER ENTRY FORM</h2>
+    </div>
+
+    <div class="sheet-container">
+        <div class="unlock-area" id="lockZone">
+            <input type="password" id="passInput" placeholder="Enter Unlock Password" style="width: 200px;">
+            <button type="button" class="btn-unlock" onclick="validateLock()">Unlock Form</button>
+            <span id="statusLabel" class="status-tag locked">Locked</span>
+        </div>
+
+        <form id="residencyForm" class="hidden">
+            <input type="hidden" name="Fleet Source" value="DS Fleet (Form B)">
+            <table>
+                <tr><td class="label-cell">Customer Name <span class="required-star">*</span></td>
+                    <td><select id="customerSelect" name="Customer Name" onchange="updateSites();" required>
+                        <option value="">-- Select Customer --</option>
+                        <option value="TATA STEEL LTD">TATA STEEL LTD</option>
+                        <option value="NORTHERN COALFIELDS LTD">NORTHERN COALFIELDS LTD</option>
+                        <option value="WESTERN COALFIELDS LTD">WESTERN COALFIELDS LTD</option>
+                        <option value="EASTERN COALFIELDS LTD">EASTERN COALFIELDS LTD</option>
+                        <option value="NMDC LTD">NMDC LTD</option>
+                        <option value="CENTRAL COALFIELDS LTD">CENTRAL COALFIELDS LTD</option> 
+                    </select></td>
+                </tr>
+                <tr><td class="label-cell">Date <span class="required-star">*</span></td><td><input type="date" name="Date" id="valDate" onchange="fetchPreviousData();" required></td></tr>
+                <tr><td class="label-cell">Technician Name <span class="required-star">*</span></td><td><input type="text" name="Technician Name" id="valTech" required></td></tr>
+                <tr><td class="label-cell">Work Site <span class="required-star">*</span></td><td><select id="workSiteSelect" name="Work Site" onchange="updateFleet();" required><option value="">-- Select Site --</option></select></td></tr>
+                <tr>
+                    <td class="label-cell">Fleet ID <span class="required-star">*</span></td>
+                    <td>
+                        <select id="fleetSelect" name="Fleet" onchange="fetchPreviousData();" required><option value="">-- Select Fleet --</option></select>
+                        <div id="syncStatus" class="sync-status"></div>
+                    </td>
+                </tr>
+                <tr><td class="label-cell">Shift <span class="required-star">*</span></td><td><select name="Shift" required><option value="">-- Select Shift --</option><option>Shift A</option><option>Shift B</option><option>Shift C</option><option>G Shift</option></select></td></tr>
+                
+                <tr><td class="label-cell">Rotation Pressure</td><td><input type="number" step="any" name="Rotation Pressure" class="param-input"></td></tr>
+                <tr><td class="label-cell">Rotation RPM</td><td><input type="number" step="any" name="Rotation RPM" class="param-input"></td></tr>
+                <tr><td class="label-cell">Receiver Pr NoLoad</td><td><input type="number" step="any" name="Receiver Pr NoLoad" class="param-input"></td></tr>
+                <tr><td class="label-cell">Receiver Pr Unload</td><td><input type="number" step="any" name="Receiver Pr Unload" class="param-input"></td></tr>
+                <tr><td class="label-cell">Receiver Pr Load</td><td><input type="number" step="any" name="Receiver Pr Load" class="param-input"></td></tr>
+                <tr><td class="label-cell">Reduced Air pressure</td><td><input type="number" step="any" name="Reduced Air pressure" class="param-input"></td></tr>
+                <tr><td class="label-cell">Full Air Set Pr</td><td><input type="number" step="any" name="Full Air Set Pr" class="param-input"></td></tr>
+                <tr><td class="label-cell">Low Impact (TH)</td><td><input type="number" step="any" name="Low Impact TH" class="param-input"></td></tr>
+                <tr><td class="label-cell">Air Pressure Full</td><td><input type="number" step="any" name="Air Pressure Full" class="param-input"></td></tr>
+                <tr><td class="label-cell">Interstage Pr Load</td><td><input type="number" step="any" name="Interstage Pr Load" class="param-input"></td></tr>
+                
+                <tr><td class="label-cell">Feed Pr Low Impact</td><td><input type="number" step="any" name="Feed Pr Low Impact" class="param-input"></td></tr>
+                <tr><td class="label-cell">Feed Pr High Impact</td><td><input type="number" step="any" name="Feed Pr High Impact" class="param-input"></td></tr>
+                <tr><td class="label-cell">HECL pr High Impact</td><td><input type="number" step="any" name="HECL pr High Impact" class="param-input"></td></tr>
+                <tr><td class="label-cell">DCT (%)</td><td><input type="number" step="any" name="DCT Percent" class="param-input"></td></tr>
+                <tr><td class="label-cell">Water injection (%)</td><td><input type="number" step="any" name="Water injection Percent" class="param-input"></td></tr>
+                
+                <tr><td class="label-cell">Compressor Load</td><td><input type="number" step="any" name="Compressor Load" class="param-input"></td></tr>
+                <tr><td class="label-cell">Engine RPM Drilling</td><td><input type="number" step="any" name="Engine RPM Drilling" class="param-input"></td></tr>
+                <tr><td class="label-cell">Engine Temp <span class="required-star">*</span></td><td><input type="number" step="any" name="Engine Temp" id="valEngTemp" class="param-input"></td></tr>
+                <tr><td class="label-cell">Hyd-Oil Temp</td><td><input type="number" step="any" name="Hyd-Oil Temp" class="param-input"></td></tr>
+                <tr><td class="label-cell">Ambient Temp</td><td><input type="number" step="any" name="Ambient Temp" class="param-input"></td></tr>
+                <tr><td class="label-cell">Engine load Drilling</td><td><input type="number" step="any" name="Engine load Drilling" class="param-input"></td></tr>
+                <tr><td class="label-cell">Boost Pressure</td><td><input type="number" step="any" name="Boost Pressure" class="param-input"></td></tr>
+                <tr><td class="label-cell">Engine oil pressure <span class="required-star">*</span></td><td><input type="number" step="any" name="Engine oil pressure" id="valEngOil" class="param-input"></td></tr>
+                <tr><td class="label-cell">Air intake temp</td><td><input type="number" step="any" name="Air intake temp" class="param-input"></td></tr>
+                <tr><td class="label-cell">Compressor Temp (L)</td><td><input type="number" step="any" name="Compressor Temp L" class="param-input"></td></tr>
+                <tr><td class="label-cell">Compressor Temp (H)</td><td><input type="number" step="any" name="Compressor Temp H" class="param-input"></td></tr>
+                
+                <tr><td class="label-cell">Charging Voltage</td><td><input type="number" step="any" name="Charging Voltage" class="param-input"></td></tr>
+                <tr><td class="label-cell">Fuel Pressure</td><td><input type="number" step="any" name="Fuel Pressure" class="param-input"></td></tr>
+                <tr><td class="label-cell">Tramming</td><td><input type="number" step="any" name="Tramming" class="param-input"></td></tr>
+                <tr><td class="label-cell">Y193 Inlet Pressure</td><td><input type="number" step="any" name="Y193 Inlet Pressure" class="param-input"></td></tr>
+                <tr><td class="label-cell">High Impact (TH)</td><td><input type="number" step="any" name="High Impact TH" class="param-input"></td></tr>
+                <tr><td class="label-cell">Damper Pr High (TH)</td><td><input type="number" step="any" name="Damper Pressure High" class="param-input"></td></tr>
+                <tr><td class="label-cell">Feed Pr Coupling</td><td><input type="number" step="any" name="Feed Pr Coupling" class="param-input"></td></tr>
+                <tr><td class="label-cell">Feed Pr Uncoupling</td><td><input type="number" step="any" name="Feed Pr Uncoupling" class="param-input"></td></tr>
+                <tr><td class="label-cell">Rotation Pr Rod Joint</td><td><input type="number" step="any" name="Rotation Pr Rod To Rod" class="param-input"></td></tr>
+            </table>
+            
+            <div style="padding: 20px;">
+                <button type="submit" id="submitBtn" class="btn-submit">Submit Record</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const scriptURL = "PASTE_YOUR_DEPLOYED_WEB_APP_URL_HERE";
+        const passKey = "Epiroc@123";
+
+        function validateLock() {
+            const input = document.getElementById('passInput').value;
+            if (input === passKey) {
+                document.getElementById('residencyForm').classList.remove('hidden');
+                document.getElementById('lockZone').style.display = 'none';
+            } else { alert("Incorrect Password"); }
+        }
+
+        async function fetchPreviousData() {
+            const fleet = document.getElementById('fleetSelect').value;
+            const date = document.getElementById('valDate').value;
+            const status = document.getElementById('syncStatus');
+            if (fleet && date) {
+                status.style.display = 'block'; status.innerText = "⏳ Syncing previous parameters...";
+                try {
+                    const response = await fetch(`${scriptURL}?get=previousData&fleet=${encodeURIComponent(fleet)}&date=${date}`);
+                    const result = await response.json();
+                    if (!result.error) {
+                        document.querySelectorAll('.param-input').forEach(input => {
+                            if (result[input.name] !== undefined) input.value = result[input.name];
+                        });
+                        status.innerText = "✅ Values restored from database";
+                    } else { status.innerText = "ℹ️ New entry for this fleet/date"; }
+                } catch (e) { status.innerText = "⚠️ Sync Error"; }
+                setTimeout(() => { status.style.display = 'none'; }, 4000);
+            }
+        }
+
+        // FULL SITE DATA
+        const customerToSites = {
+    "TATA STEEL LTD": ["Noamundi Iron Ore Mines", "Khondbond Iron Ore Mines", "Joda Iron Ore Mines"],
+    "NORTHERN COALFIELDS LTD": ["Jayant Projects", "Khadia Project", "Nigahi Project", "Dudhichua Project", "Kakri Project", "Bina Projects", "Jhingurda Project", "Krishnasila Project", "Block B"],
+    "WESTERN COALFIELDS LTD": ["Sasti OCM", "Umrer OCM", "Kamptee OCM", "Durgapur OCM", "Majri OCM", "NMOC OCM", "Ukni OCM", "Mungoli OCM", "Junad OCM", "Penganga OCM", "Naigaon OCM", "Namug OCM"],
+    "EASTERN COALFIELDS LTD": ["BANJEMEHARI OCP", "SP MINES-CHITRA", "BARMURI OCP-MUGMA", "SANKARPUR OCP", "GAURANDI OCP", "NAKRAKONDA OCP", "RAJMAHAL OCP", "KOTTADIH OCP"],
+    "NMDC LTD": ["BACHELI", "KIRANDUL", "Donimalai"],
+    "MAHANADI COALFIELDS LTD": ["LAKHANPUR OCP", "ANANTA OCP", "LINGARAJ OCP", "JAGANNATH OCP", "GARJANBAHAL OCP", "LAJKURA OCP"],
+    "THE SINGARENI COLLIERIES COMPANY LIMITED": ["PKOC2,Manuguru", "OC3,RG2 Area", "OC1,RG3 Area", "SCCL/JVR OC satupally", "SCCL/RGIII-OC2", "SCCL/RGII-OC3"],
+    "SOUTH EASTERN COALFILEDS LTD": ["DIPKA PROJECT", "KUSHMUNDA PROJECT", "GEVRA PROJECT"],
+    "STEEL AUTHORITY OF INDIA LTD": ["BARSUA IRON MINES", "BOLANI IRON ORE MINES", "Meghahatuburu Iron Mines", "Kiriburu Iron Ore Mines", "Gua Ore Mines", "RAJHARA MINES", "Dalli Rajhara - Bhilai", "NANDINI MINES", "JHARAN DALLI MINES"],
+    "BHARAT COKING COAL LIMITED": ["Nichitpur Project", "Akashkinaree Project", "BASANTIMATA, DAIBARI OCP", "AKWM OCP", "Viswakarma Project", "Dahibari Project", "Muraidih OCP", "New Akshkinaree OCP", "Sadabti Project", "SOCP, BARORA AREA-1", "Kunya OCP", "ABOCP, BLOCK II AREA", "Dahibari OCP", "Block II OCP", "Block IV"],
+    "RELIANCE POWER": ["Muher & Muher Project"],
+    "JAIPRAKASH ASSOCIATES LTD": ["Manguli Site"],
+    "CENTRAL COALFIELDS LTD": ["Jharkhand Project", "SD OCM Project", "Purnadih Project", "Topa Site", "Katara Project, CCL", "Birsa Project", "Rajrappa Project", "Piparwar Project", "Dakra Project", "Swang Project", "Urimari Project", "KDH Project", "Religara Project", "Tarmi Project", "Ashok Project", "Rohini Project", "Karo Project", "Tapin North Project", "Khasmahal Project", "Giddi C Project", "Pundi Project", "Kedla Project", "Parej East Project", "Amlo Project"]
+};
+
+const siteToFleet = {
+    "Noamundi Iron Ore Mines": ["IDM45D-201608031"],
+    "Khondbond Iron Ore Mines": ["IDM45D-201408029", "IDM45D-201408028"],
+    "Joda Iron Ore Mines": ["IDM45D-201408030"],
+    "Jayant Projects": ["IDM30-202006955", "IDM30-202006951", "IDM30-202006953", "IDM30-202006954", "IDM30-202006952", "IDM30-201306795", "IDM30-201306802", "IDM30-201306801", "IDM30-201306799"],
+    "Khadia Project": ["IDM30-201206788"],
+    "Nigahi Project": ["IDM30-201306803", "IDM30-201306797", "IDM30-201306800", "IDM30-201206790"],
+    "Dudhichua Project": ["IDM30-202006949", "IDM30-202006950", "IDM30-202006946", "IDM30-202006947", "IDM30-201306798", "IDM30-201306808"],
+    "Bina Projects": ["IDM30-201306806", "IDM30-201306793", "IDM30-201306794", "IDM30-201206790"],
+    "Kakri Project": ["IDM30-201306804"],
+    "Block B": ["IDM30-201306796", "IDM30-201306805", "IDM30-201206789"],
+    "Jhingurda Project": ["IDM30-202306993"],
+    "Krishnasila Project": ["IDM30-201306807", "IDM30-201306791"],
+    "Sasti OCM": ["IDM30-201806902", "IDM30-201906931"],
+    "Kamptee OCM": ["IDM30-202006941", "IDM30-201506873"],
+    "Durgapur OCM": ["IDM30-201906940", "IDM30-201706890", "IDM30-201806900", "IDM30-201506869"],
+    "Majri OCM": ["IDM30-201906933"],
+    "NMOC OCM": ["IDM30-201506870"],
+    "Ukni OCM": ["IDM30-201906929", "IDM30-202106968", "IDM30-201906939"],
+    "Mungoli OCM": ["IDM30-202106966", "IDM30-201706889"],
+    "Junad OCM": ["IDM30-201506871"],
+    "Penganga OCM": ["IDM30-201506872"],
+    "Naigaon OCM": ["IDM30-202106967"],
+    "Namug OCM": ["IDM30-201906932", "IDM30-201806903"],
+    "BANJEMEHARI OCP": ["IDM30-201806909"],
+    "SP MINES-CHITRA": ["IDM30-201806923", "IDM30-202206989"],
+    "BARMURI OCP-MUGMA": ["IDM30-202206988", "IDM30-201606883"],
+    "SANKARPUR OCP": ["IDM30-201806922"],
+    "GAURANDI OCP": ["IDM30-201806924"],
+    "NAKRAKONDA OCP": ["IDM30-202206990"],
+    "RAJMAHAL OCP": ["IDM30-201206763", "IDM30-201206759", "IDM30-201206760"],
+    "KOTTADIH OCP": ["IDM30-201206764", "IDM30-201606885"],
+    "BACHELI": ["IDM45-201908036"],
+    "KIRANDUL": ["IDM45D-200808026"],
+    "Donimalai": ["IDM45D-201908034", "IDM45D-201908035"],
+    "LAKHANPUR OCP": ["IDM30-202106956", "IDM30-201206770", "IDM30-202106970", "IDM30-201206772"],
+    "ANANTA OCP": ["IDM30-202106958", "IDM30-202106961", "IDM30-202106960"],
+    "LINGARAJ OCP": ["IDM30-201206782"],
+    "JAGANNATH OCP": ["IDM30-202106957", "IDM30-202106962", "IDM30-201606877"],
+    "GARJANBAHAL OCP": ["IDM30-202106959"],
+    "LAJKURA OCP": ["IDM30-201206782"],
+    "PKOC2,Manuguru": ["IDM30-201806914", "IDM30-202006943", "IDM30-202006945", "IDM30-202006944"],
+    "OC3,RG2 Area": ["IDM30-201806912", "IDM30-201706895", "IDM30-201706897"],
+    "OC1,RG3 Area": ["IDM30-201806911"],
+    "SCCL/JVR OC satupally": ["IDM30-201706894"],
+    "SCCL/RGIII-OC2": ["IDM30-201706893"],
+    "SCCL/RGII-OC3": ["IDM30-201706892"],
+    "DIPKA PROJECT": ["PV-351-US008044", "IDM30-201906926"],
+    "KUSHMUNDA PROJECT": ["IDM30-201906927", "IDM30-201906925"],
+    "GEVRA PROJECT": ["IDM30-201906928"],
+    "BARSUA IRON MINES": ["IDM30-200906719", "IDM30-201406824"],
+    "BOLANI IRON ORE MINES": ["IDM30-201406823"],
+    "Meghahatuburu Iron Mines": ["IDM30-200906718", "IDM30-202206983", "IDM30-201406820"],
+    "Kiriburu Iron Ore Mines": ["IDM30-202006908", "IDM30-200806677", "IDM30-201406821"],
+    "Gua Ore Mines": ["IDM30-200906717", "IDM30-200306594", "IDM30-201406822"],
+    "RAJHARA MINES": ["IDM30-201106740", "IDM30-201406819"],
+    "Dalli Rajhara - Bhilai": ["IDM30-201106739", "IDM30-202406997", "IDM30-202306991", "IDM30-202006948"],
+    "NANDINI MINES": ["IDM30-202406998"],
+    "JHARAN DALLI MINES": ["IDM30-201606879", "IDM30-201206774"],
+    "Nichitpur Project": ["IDM30-202506994"],
+    "Akashkinaree Project": ["IDM30-202506997"],
+    "BASANTIMATA, DAIBARI OCP": ["IDM30-202206986"],
+    "Block II OCP": ["IDM30-201506862"],
+    "AKWM OCP": ["IDM30-202206985", "IDM30-202206978"],
+    "Viswakarma Project": ["IDM30-202206977", "IDM30-202506998"],
+    "Dahibari Project": ["IDM30-202506995", "IDM30-201506864"],
+    "Muraidih OCP": ["IDM30-202206971"],
+    "New Akshkinaree OCP": ["IDM30-202206979"],
+    "Sadabti Project": ["IDM30-202506996"],
+    "SOCP, BARORA AREA-1": ["IDM30-202206987"],
+    "Kunya OCP": ["IDM30-202206972"],
+    "ABOCP, BLOCK II AREA": ["IDM30-202206984"],
+    "Dahibari OCP": ["IDM30-202506995"],
+    "Block IV": ["IDM30-201406834", "IDM30-201506867"],
+    "Muher & Muher Project": ["PV-271D RCS4-USS004616", "PV-271D RCS4-USS004647", "IDM30-201706899", "IDM30-201206765", "IDM30-201306776", "DMM3-USS004654", "IDM30-201206766", "DMM3-USS004655"],
+    "Manguli Site": ["IDM30-201106741"],
+    "Jharkhand Project": ["IDM30-201806907", "IDM30-201506843"],
+    "SD OCM Project": ["IDM30-201906938"],
+    "Purnadih Project": ["IDM30-201906935", "IDM30-201806916", "IDM30-201506841", "IDM30-201506840"],
+    "Topa Site": ["IDM30-201806906", "IDM30-201506846"],
+    "Katara Project, CCL": ["IDM30-202206976"],
+    "Birsa Project": ["IDM45-201908036"],
+    "Rajrappa Project": ["IDM45-201908036"],
+    "Piparwar Project": ["IDM45-201908036"],
+    "Dakra Project": ["IDM45-201908036"],
+    "Swang Project": ["IDM45-201908036"],
+    "Urimari Project": ["IDM30-201106750", "IDM30-201506855"],
+    "Religara Project": ["IDM30-202206981"],
+    "KDH Project": ["IDM30-202206982", "IDM30-202206974", "IDM30-201806918"],
+    "Tarmi Project": ["IDM30-201906936"],
+    "Ashok Project": ["IDM30-202206975", "IDM30-201506849"],
+    "Rohini Project": ["IDM30-201806917"],
+    "Karo Project": ["IDM30-201506848"],
+    "Tapin North Project": ["IDM30-201506847"],
+    "Khasmahal Project": ["IDM30-201406826"],
+    "Giddi C Project": ["IDM30-201406827", "IDM30-201506851"],
+    "Pundi Project": ["IDM30-201506857"],
+    "Kedla Project": ["IDM30-201506856"],
+    "Parej East Project": ["IDM30-201506854"],
+    "Amlo Project": ["IDM30-201506853"]
+};
+
+
+        function updateSites() {
+            const customer = document.getElementById('customerSelect').value;
+            const siteSelect = document.getElementById('workSiteSelect');
+            siteSelect.innerHTML = '<option value="">-- Select Site --</option>';
+            if (customerToSites[customer]) {
+                customerToSites[customer].forEach(s => {
+                    let opt = document.createElement('option'); opt.value = opt.text = s; siteSelect.add(opt);
+                });
+            }
+        }
+
+        function updateFleet() {
+            const site = document.getElementById('workSiteSelect').value;
+            const fleetSelect = document.getElementById('fleetSelect');
+            fleetSelect.innerHTML = '<option value="">-- Select Fleet --</option>';
+            if (siteToFleet[site]) {
+                siteToFleet[site].forEach(f => {
+                    let opt = document.createElement('option'); opt.value = opt.text = f; fleetSelect.add(opt);
+                });
+            }
+        }
+
+        document.getElementById('residencyForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "Submitting..."; btn.disabled = true;
+            fetch(scriptURL, { method: 'POST', body: new FormData(e.target)})
+            .then(() => { alert("Success! Parameters Recorded."); location.reload(); })
+            .catch(() => { alert("Submission Failed."); btn.disabled = false; btn.innerText = "Submit Record"; });
+        });
+    </script>
+</body>
+</html>
