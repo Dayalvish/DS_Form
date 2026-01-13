@@ -66,7 +66,7 @@
                 <tr><td class="label-cell">Technician Name <span class="required-star">*</span></td><td><input type="text" name="Technician Name" id="valTech" required></td></tr>
                 <tr><td class="label-cell">Work Site <span class="required-star">*</span></td><td><select id="workSiteSelect" name="Work Site" onchange="updateFleet();" required><option value="">-- Select Site --</option></select></td></tr>
                 <tr>
-                    <td class="label-cell">Fleet ID <span class="required-star">*</span></td>
+                    <tr><td class="label-cell">Fleet ID <span class="required-star">*</span></td><td><select id="fleetSelect" name="Fleet ID" onchange="checkValidation()"><option value="">-- Select Fleet --</option></select></td></tr>
                     <td>
                         <select id="fleetSelect" name="Fleet" onchange="fetchPreviousData();" required><option value="">-- Select Fleet --</option></select>
                         <div id="syncStatus" class="sync-status"></div>
@@ -304,6 +304,7 @@
 </script>
 </body>
 </html>
+
 
 
 
