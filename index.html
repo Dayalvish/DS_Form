@@ -63,13 +63,24 @@
                     </select></td>
                 <tr><td class="label-cell">Date <span class="required-star">*</span></td><td><input type="date" name="Date" id="valDate" onchange="fetchPreviousData();" required></td></tr>
                 <tr><td class="label-cell">Technician Name <span class="required-star">*</span></td><td><input type="text" name="Technician Name" id="valTech" required></td></tr>
-                <tr><td class="label-cell">Work Site <span class="required-star">*</span></td><td><select id="workSiteSelect" name="Work Site" onchange="updateFleet(); checkValidation();"><option value="">-- Select Site --</option></select></td></tr>
-                <tr><td class="label-cell">Fleet ID <span class="required-star">*</span></td><td><select id="fleetSelect" name="Fleet ID" onchange="checkValidation()"><option value="">-- Select Fleet --</option></select></td></tr>                   
                 <tr>
-                    <td>                        
-                        <div id="syncStatus" class="sync-status"></div>
-                    </td>
-                </tr>
+    <td class="label-cell">Work Site <span class="required-star">*</span></td>
+    <td>
+        <select id="workSiteSelect" name="Work Site" onchange="updateFleet(); checkValidation();" required>
+            <option value="">-- Select Site --</option>
+        </select>
+    </td>
+</tr>
+
+<tr>
+    <td class="label-cell">Fleet ID <span class="required-star">*</span></td>
+    <td>
+        <select id="fleetSelect" name="Fleet ID" onchange="fetchPreviousData(); checkValidation();" required>
+            <option value="">-- Select Fleet --</option>
+        </select>
+        <div id="syncStatus" class="sync-status"></div>
+    </td>
+</tr>
                 <tr><td class="label-cell">Shift <span class="required-star">*</span></td><td><select name="Shift" required><option value="">-- Select Shift --</option><option>Shift A</option><option>Shift B</option><option>Shift C</option><option>G Shift</option></select></td></tr>
                 
                 <tr><td class="label-cell">Rotation Pressure</td><td><input type="number" step="any" name="Rotation Pressure"></td></tr>                    
@@ -302,6 +313,7 @@
 </script>
 </body>
 </html>
+
 
 
 
