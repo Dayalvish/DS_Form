@@ -34,15 +34,42 @@
         <h2>EPIROC DS-FLEET PARAMETER ENTRY FORM</h2>
     </div>
 
-    <div class="sheet-container">
+   <div class="sheet-container">
         <div class="unlock-area" id="lockZone">
             <input type="password" id="passInput" placeholder="Enter Unlock Password" style="width: 200px;">
             <button type="button" class="btn-unlock" onclick="validateLock()">Unlock Form</button>
         </div>
         
-        <div style="text-align:center; margin-bottom:10px; margin-top:10px;">
+        <div style="text-align:center; padding: 10px 0;">
             <span id="statusLabel" class="status-tag locked">Locked</span>
         </div>
+
+        <form id="residencyForm" class="hidden">
+            <input type="hidden" name="Fleet Source" value="DS Fleet (Form B)">
+            <table>
+                <tr>
+                    <td class="label-cell">Customer Name <span class="required-star">*</span></td>
+                    <td><select id="customerSelect" name="Customer Name" onchange="updateSites();" required>
+                        <option value="">-- Select --</option>
+                        </select></td>
+                </tr>
+                <tr>
+                    <td class="label-cell">Fleet ID <span class="required-star">*</span></td>
+                    <td>
+                        <select id="fleetSelect" name="Fleet ID" onchange="fetchPreviousData();" required>
+                            <option value="">-- Select Fleet --</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label-cell">Data Sync</td>
+                    <td>
+                        <button type="button" onclick="fetchPreviousData()" style="background:#007bff; color:white; width:100%; border:none; padding:8px; border-radius:4px;">
+                            Fetch Last Entry for this Machine
+                        </button>
+                        <div id="syncStatus" class="sync-status" style="margin-top:5px; display:block;"></div>
+                    </td>
+                </tr>
 
         <form id="residencyForm" class="hidden">
             <input type="hidden" name="Fleet Source" value="DS Fleet (Form B)">
@@ -365,6 +392,7 @@ function lookupRecentData() {
 </script>
 </body>
 </html>
+
 
 
 
