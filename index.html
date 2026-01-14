@@ -149,43 +149,44 @@
             alert("Incorrect Password");
         }
     }
-/* 6. ACTIVE FETCH LOGIC & STATUS MESSAGES */
+/* 6. ACTIVE FETCH LOGIC */
 async function fetchPreviousData() {
     const fleet = document.getElementById('fleetSelect').value;
     const status = document.getElementById('syncStatus');
     
+    // Check if the dropdown has a value
     if (!fleet) {
         alert("Please select a Fleet ID first");
         return;
     }
 
-    // Standard Phrases for Status
+    // 1. Show the "Standard Phrase" immediately
     status.style.display = 'block';
-    status.style.color = '#007bff';
+    status.style.color = '#007bff'; // Blue color
     status.innerText = "⏳ Syncing latest parameters for " + fleet + "...";
 
     try {
-        // Fetches data from your Scrambled URL
+        // 2. Attempt to connect to Google Sheet
         const response = await fetch(`${scriptURL}?fleetId=${encodeURIComponent(fleet)}`);
         const result = await response.json();
 
         if (result && !result.error) {
-            // Fills number inputs (starting from Column I / Index 8 of your sheet)
+            // Success logic
             const inputs = document.querySelectorAll('input[type="number"]');
             inputs.forEach((input, index) => {
                 if (result[index + 8] !== undefined && result[index + 8] !== "") {
                     input.value = result[index + 8];
                 }
             });
-            status.style.color = "#28a745";
+            status.style.color = "#28a745"; // Green
             status.innerText = "✅ Last parameters restored successfully.";
         } else {
-            status.style.color = "#856404";
+            status.style.color = "#856404"; // Orange
             status.innerText = "ℹ️ No previous data found for this Fleet.";
         }
     } catch (e) {
-        // Fallback message if GS is not yet ready for GET requests
-        status.style.color = "#d9534f";
+        // 3. The "Standard Phrase" for Under Progress
+        status.style.color = "#d9534f"; // Red
         status.innerText = "⚠️ Under Progress. Will be functional shortly.";
     }
 }
@@ -367,6 +368,7 @@ async function fetchPreviousData() {
 </script>
 </body>
 </html>
+
 
 
 
