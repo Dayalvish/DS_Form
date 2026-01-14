@@ -176,24 +176,53 @@
 
     /* 4. Dropdown Logic */
     const customerToSites = {
-        "TATA STEEL LTD": ["Noamundi Iron Ore Mines", "Khondbond Iron Ore Mines", "Joda Iron Ore Mines"],
-        "NORTHERN COALFIELDS LTD": ["Jayant Projects", "Khadia Project", "Nigahi Project", "Dudhichua Project", "Kakri Project", "Bina Projects", "Jhingurda Project", "Krishnasila Project", "Block B"]
-    };
+    "TATA STEEL LTD": ["Noamundi Iron Ore Mines", "Khondbond Iron Ore Mines", "Joda Iron Ore Mines"],
+    "NORTHERN COALFIELDS LTD": ["Jayant Projects", "Khadia Project", "Nigahi Project", "Dudhichua Project", "Kakri Project", "Bina Projects", "Jhingurda Project", "Krishnasila Project", "Block B"]
+};
 
-    function updateSites() {
-        const customer = document.getElementById('customerSelect').value;
-        const siteSelect = document.getElementById('workSiteSelect');
-        siteSelect.innerHTML = '<option value="">-- Select Site --</option>';
-        if (customerToSites[customer]) {
-            customerToSites[customer].forEach(site => {
-                let opt = document.createElement('option');
-                opt.value = site; opt.text = site;
-                siteSelect.add(opt);
-            });
-        }
+const siteToFleet = {
+    "Noamundi Iron Ore Mines": ["DM45-7281", "DM45-7282"],
+    "Jayant Projects": ["IDM30-101", "IDM30-102", "PV271-205"],
+    "Nigahi Project": ["PV271-901", "PV271-902"]
+};
+
+/* 2. Update Sites Dropdown */
+function updateSites() {
+    const customer = document.getElementById('customerSelect').value;
+    const siteSelect = document.getElementById('workSiteSelect');
+    const fleetSelect = document.getElementById('fleetSelect');
+    
+    // Reset both dropdowns
+    siteSelect.innerHTML = '<option value="">-- Select Site --</option>';
+    fleetSelect.innerHTML = '<option value="">-- Select Fleet --</option>';
+    
+    if (customerToSites[customer]) {
+        customerToSites[customer].forEach(site => {
+            let opt = document.createElement('option');
+            opt.value = site; opt.text = site;
+            siteSelect.add(opt);
+        });
     }
+}
+
+/* 3. Update Fleet Dropdown */
+function updateFleet() {
+    const site = document.getElementById('workSiteSelect').value;
+    const fleetSelect = document.getElementById('fleetSelect');
+    
+    fleetSelect.innerHTML = '<option value="">-- Select Fleet --</option>';
+    
+    if (siteToFleet[site]) {
+        siteToFleet[site].forEach(fleet => {
+            let opt = document.createElement('option');
+            opt.value = fleet; opt.text = fleet;
+            fleetSelect.add(opt);
+        });
+    }
+}
 </script>
 </body>
 </html>
+
 
 
