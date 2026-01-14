@@ -36,10 +36,16 @@
 
     <div class="sheet-container">
         <div class="unlock-area" id="lockZone">
-            <input type="password" id="passInput" placeholder="Enter Unlock Password" style="width: 200px;">
-            <button type="button" class="btn-unlock" onclick="validateLock()">Unlock Form</button>
-            <span id="statusLabel" class="status-tag locked">Locked</span>
-        </div>
+    <input type="password" id="passInput" placeholder="Enter Unlock Password" style="width: 200px;">
+    <button type="button" class="btn-unlock" onclick="validateLock()">Unlock Form</button>
+</div>
+<div style="text-align:center; margin-bottom:10px;">
+    <span id="statusLabel" class="status-tag locked">Locked</span>
+</div>
+
+<form id="residencyForm" class="hidden">
+    <input type="hidden" name="Fleet Source" value="DS Fleet (Form B)">
+    <table>
 
         <form id="residencyForm" class="hidden">
             <input type="hidden" name="Fleet Source" value="DS Fleet (Form B)">
@@ -351,6 +357,7 @@ function lookupRecentData() {
 </script>
 </body>
 </html>
+
 
 
 
