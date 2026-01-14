@@ -150,7 +150,46 @@
             alert("Incorrect Password");
         }
     }
+/* 6. ACTIVE FETCH LOGIC & STATUS MESSAGES */
+async function fetchPreviousData() {
+    const fleet = document.getElementById('fleetSelect').value;
+    const status = document.getElementById('syncStatus');
+    
+    if (!fleet) {
+        alert("Please select a Fleet ID first");
+        return;
+    }
 
+    // Standard Phrases for Status
+    status.style.display = 'block';
+    status.style.color = '#007bff';
+    status.innerText = "⏳ Syncing latest parameters for " + fleet + "...";
+
+    try {
+        // Fetches data from your Scrambled URL
+        const response = await fetch(`${scriptURL}?fleetId=${encodeURIComponent(fleet)}`);
+        const result = await response.json();
+
+        if (result && !result.error) {
+            // Fills number inputs (starting from Column I / Index 8 of your sheet)
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach((input, index) => {
+                if (result[index + 8] !== undefined && result[index + 8] !== "") {
+                    input.value = result[index + 8];
+                }
+            });
+            status.style.color = "#28a745";
+            status.innerText = "✅ Last parameters restored successfully.";
+        } else {
+            status.style.color = "#856404";
+            status.innerText = "ℹ️ No previous data found for this Fleet.";
+        }
+    } catch (e) {
+        // Fallback message if GS is not yet ready for GET requests
+        status.style.color = "#d9534f";
+        status.innerText = "⚠️ Under Progress. Will be functional shortly.";
+    }
+}
     /* 3. MINIMAL DATA MAPPING (We will add your full list later) */
     const customerToSites = {
         "TATA STEEL LTD": ["Noamundi Iron Ore Mines", "Khondbond Iron Ore Mines", "Joda Iron Ore Mines"],
@@ -329,6 +368,7 @@
 </script>
 </body>
 </html>
+
 
 
 
